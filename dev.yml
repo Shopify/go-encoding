@@ -1,0 +1,18 @@
+name: go-encoding
+
+up:
+  - go:
+      version: "1.15.3"
+      modules: true
+  - custom:
+        name: Load dependencies
+        met?: go mod tidy
+        meet: go mod tidy
+
+commands:
+  test: go test -race ./...
+  style:
+    run: bin/style
+    desc: Static verification using or autofix issues when possible.
+    syntax:
+      optional: --fix
