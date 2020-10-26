@@ -7,7 +7,7 @@ import (
 )
 
 func TestGobEncoding(t *testing.T) {
-	e := NewBufferedMarshalling(GobEncoding)
+	e := NewValueEncoding(GobEncoding)
 
 	t.Run("basic", func(t *testing.T) {
 		testBasicEncoding(t, e)

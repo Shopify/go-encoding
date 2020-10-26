@@ -3,21 +3,21 @@ package encoding
 import "io"
 
 type Encoding interface {
-	MarshalEncoding
+	ValueEncoding
 	StreamEncoding
 }
 
-type MarshalEncoding interface {
-	Marshaller
-	Unmarshaller
+type ValueEncoding interface {
+	ValueEncoder
+	ValueDecoder
 }
 
-type Marshaller interface {
-	Marshal(data interface{}) ([]byte, error)
+type ValueEncoder interface {
+	Encode(data interface{}) ([]byte, error)
 }
 
-type Unmarshaller interface {
-	Unmarshal(b []byte, data interface{}) error
+type ValueDecoder interface {
+	Decode(b []byte, data interface{}) error
 }
 
 type StreamEncoding interface {
@@ -26,9 +26,9 @@ type StreamEncoding interface {
 }
 
 type StreamEncoder interface {
-	Encode(data interface{}, w io.Writer) error
+	StreamEncode(data interface{}, w io.Writer) error
 }
 
 type StreamDecoder interface {
-	Decode(r io.Reader, data interface{}) error
+	StreamDecode(r io.Reader, data interface{}) error
 }

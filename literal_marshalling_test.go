@@ -8,7 +8,7 @@ import (
 )
 
 func TestLiteralEncoding(t *testing.T) {
-	for _, e := range []MarshalEncoding{nil, JsonEncoding, NewBufferedMarshalling(GobEncoding)} {
+	for _, e := range []ValueEncoding{nil, JsonEncoding, NewValueEncoding(GobEncoding)} {
 		t.Run(fmt.Sprintf("%T", e), func(t *testing.T) {
 			l := NewLiteralEncoding(e)
 
@@ -25,7 +25,7 @@ func TestLiteralEncoding(t *testing.T) {
 	}
 
 	t.Run("unsupported", func(t *testing.T) {
-		enc, err := LiteralEncoding.Marshal(struct{}{})
+		enc, err := LiteralEncoding.Encode(struct{}{})
 		require.Zero(t, enc)
 		require.EqualError(t, err, "not implemented for type struct")
 	})

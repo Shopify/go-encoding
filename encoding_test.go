@@ -36,8 +36,8 @@ import (
 // gob       749
 //
 func BenchmarkEncoding(b *testing.B) {
-	benchmarks := map[string]MarshalEncoding{
-		"gob":     NewBufferedMarshalling(GobEncoding),
+	benchmarks := map[string]ValueEncoding{
+		"gob":     NewValueEncoding(GobEncoding),
 		"json":    JsonEncoding,
 		"literal": NewLiteralEncoding(nil),
 	}
@@ -46,14 +46,14 @@ func BenchmarkEncoding(b *testing.B) {
 			b.Run("int", func(b *testing.B) {
 				b.Run("encode", func(b *testing.B) {
 					for i := 0; i < b.N; i++ {
-						_, _ = encoding.Marshal(123)
+						_, _ = encoding.Encode(123)
 					}
 				})
 
 				b.Run("decode", func(b *testing.B) {
 					for i := 0; i < b.N; i++ {
 						var val int
-						_ = encoding.Unmarshal([]byte("123"), &val)
+						_ = encoding.Decode([]byte("123"), &val)
 					}
 				})
 			})
@@ -61,14 +61,14 @@ func BenchmarkEncoding(b *testing.B) {
 			b.Run("float64", func(b *testing.B) {
 				b.Run("encode", func(b *testing.B) {
 					for i := 0; i < b.N; i++ {
-						_, _ = encoding.Marshal(12.3)
+						_, _ = encoding.Encode(12.3)
 					}
 				})
 
 				b.Run("decode", func(b *testing.B) {
 					for i := 0; i < b.N; i++ {
 						var val float64
-						_ = encoding.Unmarshal([]byte("12.3"), &val)
+						_ = encoding.Decode([]byte("12.3"), &val)
 					}
 				})
 			})
@@ -76,14 +76,14 @@ func BenchmarkEncoding(b *testing.B) {
 			b.Run("string", func(b *testing.B) {
 				b.Run("encode", func(b *testing.B) {
 					for i := 0; i < b.N; i++ {
-						_, _ = encoding.Marshal("123")
+						_, _ = encoding.Encode("123")
 					}
 				})
 
 				b.Run("decode", func(b *testing.B) {
 					for i := 0; i < b.N; i++ {
 						var val string
-						_ = encoding.Unmarshal([]byte("123"), &val)
+						_ = encoding.Decode([]byte("123"), &val)
 					}
 				})
 			})
@@ -95,27 +95,27 @@ type testStruct struct {
 	Foo string
 }
 
-func testArbitraryEncoding(t *testing.T, m MarshalEncoding) {
+func testArbitraryEncoding(t *testing.T, m ValueEncoding) {
 	t.Run("empty struct", func(t *testing.T) {
 		item := struct{}{}
-		enc, err := m.Marshal(item)
+		enc, err := m.Encode(item)
 		require.NoError(t, err)
 		require.NotNil(t, enc)
 
 		var dec struct{}
-		err = m.Unmarshal(enc, &dec)
+		err = m.Decode(enc, &dec)
 		require.NoError(t, err)
 		require.EqualValues(t, item, dec)
 	})
 
 	t.Run("test struct", func(t *testing.T) {
 		item := testStruct{Foo: "bar"}
-		enc, err := m.Marshal(item)
+		enc, err := m.Encode(item)
 		require.NoError(t, err)
 		require.NotNil(t, enc)
 
 		var dec testStruct
-		err = m.Unmarshal(enc, &dec)
+		err = m.Decode(enc, &dec)
 		require.NoError(t, err)
 		require.EqualValues(t, item, dec)
 	})
@@ -124,84 +124,84 @@ func testArbitraryEncoding(t *testing.T, m MarshalEncoding) {
 		item, err := time.Parse(time.RFC1123Z, "Mon, 02 Jan 2006 15:04:05 -0700")
 		require.NoError(t, err)
 
-		enc, err := m.Marshal(item)
+		enc, err := m.Encode(item)
 		require.NoError(t, err)
 		require.NotNil(t, enc)
 
 		var dec time.Time
-		err = m.Unmarshal(enc, &dec)
+		err = m.Decode(enc, &dec)
 		require.NoError(t, err)
 		require.EqualValues(t, item, dec)
 	})
 
 	t.Run("nil", func(t *testing.T) {
 		var item interface{}
-		enc, err := m.Marshal(&item)
+		enc, err := m.Encode(&item)
 		require.NoError(t, err)
 		require.NotNil(t, enc)
 
 		var dec interface{}
-		err = m.Unmarshal(enc, &dec)
+		err = m.Decode(enc, &dec)
 		require.NoError(t, err)
 		require.EqualValues(t, item, dec)
 	})
 }
 
-func testBasicEncoding(t *testing.T, m MarshalEncoding) {
+func testBasicEncoding(t *testing.T, m ValueEncoding) {
 	t.Run("integer", func(t *testing.T) {
 		item := 123
-		enc, err := m.Marshal(item)
+		enc, err := m.Encode(item)
 		require.NoError(t, err)
 		require.NotNil(t, enc)
 
 		var dec int
-		err = m.Unmarshal(enc, &dec)
+		err = m.Decode(enc, &dec)
 		require.NoError(t, err)
 		require.EqualValues(t, item, dec)
 	})
 
 	t.Run("float", func(t *testing.T) {
 		item := 1.23
-		enc, err := m.Marshal(item)
+		enc, err := m.Encode(item)
 		require.NoError(t, err)
 		require.NotNil(t, enc)
 
 		var dec float64
-		err = m.Unmarshal(enc, &dec)
+		err = m.Decode(enc, &dec)
 		require.NoError(t, err)
 		require.EqualValues(t, item, dec)
 	})
 
 	t.Run("string", func(t *testing.T) {
 		item := "123"
-		enc, err := m.Marshal(item)
+		enc, err := m.Encode(item)
 		require.NoError(t, err)
 		require.NotNil(t, enc)
 
 		var dec string
-		err = m.Unmarshal(enc, &dec)
+		err = m.Decode(enc, &dec)
 		require.NoError(t, err)
 		require.EqualValues(t, item, dec)
 	})
 
 	t.Run("not a pointer", func(t *testing.T) {
-		enc, err := m.Marshal("123")
+		enc, err := m.Encode("123")
 		require.NoError(t, err)
 		require.NotNil(t, enc)
 
 		var dec string
-		err = m.Unmarshal(enc, dec)
+		err = m.Decode(enc, dec)
 		require.EqualError(t, err, "argument must be a pointer")
 		require.Zero(t, dec)
 	})
 
 	t.Run("wrong type", func(t *testing.T) {
-		enc, err := m.Marshal("12.3")
+		enc, err := m.Encode("12.3")
 		require.NoError(t, err)
 		require.NotNil(t, enc)
 
 		var dec int
-		err = m.Unmarshal(enc, &dec)
+		err = m.Decode(enc, &dec)
 		require.Error(t, err)
 		require.Zero(t, dec)
 	})

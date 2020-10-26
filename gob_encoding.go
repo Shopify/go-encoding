@@ -13,12 +13,12 @@ func NewGobEncoding() StreamEncoding {
 
 type gobEncoding struct{}
 
-func (e *gobEncoding) Encode(data interface{}, w io.Writer) error {
+func (e *gobEncoding) StreamEncode(data interface{}, w io.Writer) error {
 	enc := gob.NewEncoder(w)
 	return enc.Encode(data)
 }
 
-func (e *gobEncoding) Decode(r io.Reader, data interface{}) error {
+func (e *gobEncoding) StreamDecode(r io.Reader, data interface{}) error {
 	if !isPointer(data) {
 		return ErrNotAPointer
 	}

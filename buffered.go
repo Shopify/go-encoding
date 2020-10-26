@@ -6,40 +6,40 @@ import (
 	"io/ioutil"
 )
 
-// NewBufferedMarshalling creates an Encoding respecting the MarshalEncoding interface from a StreamEncoding
-func NewBufferedMarshalling(e StreamEncoding) Encoding {
-	return &bufferedMarshalling{e}
+// NewValueEncoding creates an Encoding respecting the ValueEncoding interface from a StreamEncoding
+func NewValueEncoding(e StreamEncoding) Encoding {
+	return &valueEncoding{e}
 }
 
-type bufferedMarshalling struct {
+type valueEncoding struct {
 	StreamEncoding
 }
 
-func (e *bufferedMarshalling) Marshal(data interface{}) ([]byte, error) {
+func (e *valueEncoding) Encode(data interface{}) ([]byte, error) {
 	var encoded bytes.Buffer
-	if err := e.Encode(data, &encoded); err != nil {
+	if err := e.StreamEncode(data, &encoded); err != nil {
 		return nil, err
 	}
 
 	return encoded.Bytes(), nil
 }
 
-func (e *bufferedMarshalling) Unmarshal(b []byte, data interface{}) error {
+func (e *valueEncoding) Decode(b []byte, data interface{}) error {
 	reader := bytes.NewReader(b)
-	return e.Decode(reader, data)
+	return e.StreamDecode(reader, data)
 }
 
-// NewBufferedEncoding creates an Encoding respecting the StreamEncoding interface from a MarshalEncoding
-func NewBufferedEncoding(e MarshalEncoding) Encoding {
-	return &bufferedEncoding{e}
+// NewStreamEncoding creates an Encoding respecting the StreamEncoding interface from a ValueEncoding
+func NewStreamEncoding(e ValueEncoding) Encoding {
+	return &streamEncoding{e}
 }
 
-type bufferedEncoding struct {
-	MarshalEncoding
+type streamEncoding struct {
+	ValueEncoding
 }
 
-func (b *bufferedEncoding) Encode(data interface{}, w io.Writer) error {
-	encoded, err := b.Marshal(data)
+func (b *streamEncoding) StreamEncode(data interface{}, w io.Writer) error {
+	encoded, err := b.Encode(data)
 	if err != nil {
 		return err
 	}
@@ -47,10 +47,10 @@ func (b *bufferedEncoding) Encode(data interface{}, w io.Writer) error {
 	return err
 }
 
-func (b *bufferedEncoding) Decode(r io.Reader, data interface{}) error {
+func (b *streamEncoding) StreamDecode(r io.Reader, data interface{}) error {
 	decoded, err := ioutil.ReadAll(r)
 	if err != nil {
 		return err
 	}
-	return b.Unmarshal(decoded, data)
+	return b.Decode(decoded, data)
 }

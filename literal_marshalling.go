@@ -9,15 +9,15 @@ var LiteralEncoding = NewLiteralEncoding(nil)
 
 // NewLiteralEncoding is an encoding that will try its best to store the data as is,
 // but fallback on another encoder if not possible.
-func NewLiteralEncoding(fallback MarshalEncoding) MarshalEncoding {
+func NewLiteralEncoding(fallback ValueEncoding) ValueEncoding {
 	return &literalMarshalling{fallback: fallback}
 }
 
 type literalMarshalling struct {
-	fallback MarshalEncoding
+	fallback ValueEncoding
 }
 
-func (e *literalMarshalling) Marshal(data interface{}) ([]byte, error) {
+func (e *literalMarshalling) Encode(data interface{}) ([]byte, error) {
 	value := reflect.ValueOf(data)
 	if t, ok := translators[value.Kind()]; ok {
 		return t.encode(value), nil
@@ -27,10 +27,10 @@ func (e *literalMarshalling) Marshal(data interface{}) ([]byte, error) {
 		return nil, fmt.Errorf("not implemented for type %s", value.Kind())
 	}
 
-	return e.fallback.Marshal(data)
+	return e.fallback.Encode(data)
 }
 
-func (e *literalMarshalling) Unmarshal(b []byte, data interface{}) error {
+func (e *literalMarshalling) Decode(b []byte, data interface{}) error {
 	if !isPointer(data) {
 		return ErrNotAPointer
 	}
@@ -44,5 +44,5 @@ func (e *literalMarshalling) Unmarshal(b []byte, data interface{}) error {
 		return fmt.Errorf("not implemented for type %s", value.Kind())
 	}
 
-	return e.fallback.Unmarshal(b, data)
+	return e.fallback.Decode(b, data)
 }
