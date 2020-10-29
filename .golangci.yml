@@ -24,6 +24,7 @@ linters:
     - deadcode
     - errcheck
     - goimports
+    - golint
     - gosimple
     - govet
     - ineffassign
