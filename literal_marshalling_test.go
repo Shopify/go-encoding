@@ -8,7 +8,7 @@ import (
 )
 
 func TestLiteralEncoding(t *testing.T) {
-	for _, e := range []ValueEncoding{nil, JsonEncoding, NewValueEncoding(GobEncoding)} {
+	for _, e := range []ValueEncoding{nil, JSONEncoding, NewValueEncoding(GobEncoding)} {
 		t.Run(fmt.Sprintf("%T", e), func(t *testing.T) {
 			l := NewLiteralEncoding(e)
 

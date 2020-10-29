@@ -5,9 +5,9 @@ import (
 	"io"
 )
 
-var JsonEncoding = NewJsonEncoding()
+var JSONEncoding = NewJSONEncoding()
 
-func NewJsonEncoding() Encoding {
+func NewJSONEncoding() Encoding {
 	return &jsonEncoding{}
 }
 

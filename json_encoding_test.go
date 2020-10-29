@@ -4,12 +4,12 @@ import (
 	"testing"
 )
 
-func TestJsonEncoding(t *testing.T) {
+func TestJSONEncoding(t *testing.T) {
 	t.Run("basic", func(t *testing.T) {
-		testBasicEncoding(t, JsonEncoding)
+		testBasicEncoding(t, JSONEncoding)
 	})
 
 	t.Run("arbitrary", func(t *testing.T) {
-		testArbitraryEncoding(t, JsonEncoding)
+		testArbitraryEncoding(t, JSONEncoding)
 	})
 }
