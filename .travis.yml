@@ -6,3 +6,7 @@ go:
 - "1.15"
 - tip
 go_import_path: github.com/Shopify/go-encoding
+
+script:
+- go test -v ./...
+- bin/style
