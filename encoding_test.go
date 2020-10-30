@@ -38,7 +38,7 @@ import (
 func BenchmarkEncoding(b *testing.B) {
 	benchmarks := map[string]ValueEncoding{
 		"gob":     NewValueEncoding(GobEncoding),
-		"json":    JsonEncoding,
+		"json":    JSONEncoding,
 		"literal": NewLiteralEncoding(nil),
 	}
 	for name, encoding := range benchmarks {
