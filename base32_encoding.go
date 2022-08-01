@@ -3,6 +3,7 @@ package encoding
 import (
 	"encoding/base32"
 	"io"
+	"io/ioutil"
 )
 
 var (
@@ -24,8 +25,7 @@ func (e base32Encoding) StreamEncode(downstream io.Writer) (io.WriteCloser, erro
 }
 
 func (e base32Encoding) StreamDecode(upstream io.Reader) (io.ReadCloser, error) {
-	r := base32.NewDecoder(e.encoding, upstream)
-	return readCloser{r, upstream}, nil
+	return ioutil.NopCloser(base32.NewDecoder(e.encoding, upstream)), nil
 }
 
 func (e base32Encoding) Encode(src []byte) ([]byte, error) {
