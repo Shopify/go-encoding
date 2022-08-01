@@ -2,6 +2,8 @@ package encoding
 
 import (
 	"bytes"
+	"errors"
+	"io"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -45,6 +47,21 @@ func (suite ByteEncodingSuite) TestByteArray() {
 	}
 }
 
+var _ io.ReadWriteCloser = (*closeableBuffer)(nil)
+
+type closeableBuffer struct {
+	bytes.Buffer
+	closed bool
+}
+
+func (c *closeableBuffer) Close() error {
+	if c.closed {
+		return errors.New("already closed")
+	}
+	c.closed = true
+	return nil
+}
+
 func (suite ByteEncodingSuite) TestByteStream() {
 	if suite.byteStreamEncoding == nil {
 		suite.T().Skip()
@@ -60,7 +77,7 @@ func (suite ByteEncodingSuite) TestByteStream() {
 
 	for _, input := range tests {
 		suite.Run(string(input), func() {
-			var buf bytes.Buffer
+			var buf closeableBuffer
 
 			w, err := suite.byteStreamEncoding.StreamEncode(&buf)
 			suite.Require().NoError(err)
@@ -78,6 +95,11 @@ func (suite ByteEncodingSuite) TestByteStream() {
 			suite.Require().NoError(err)
 
 			suite.Require().Equal(input, dec)
+
+			suite.Require().False(buf.closed)
+
+			suite.Require().NoError(buf.Close())
+			suite.Require().True(buf.closed)
 		})
 	}
 }
