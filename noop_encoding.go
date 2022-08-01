@@ -2,6 +2,7 @@ package encoding
 
 import (
 	"io"
+	"io/ioutil"
 )
 
 var NoopEncoding = NewNoopEncoding()
@@ -17,7 +18,7 @@ func (e noopEncoding) StreamEncode(downstream io.Writer) (io.WriteCloser, error)
 }
 
 func (e noopEncoding) StreamDecode(upstream io.Reader) (io.ReadCloser, error) {
-	return io.NopCloser(upstream), nil
+	return ioutil.NopCloser(upstream), nil
 }
 
 func (e noopEncoding) Encode(src []byte) ([]byte, error) {

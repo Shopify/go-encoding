@@ -3,6 +3,7 @@ package encoding
 import (
 	"encoding/base64"
 	"io"
+	"io/ioutil"
 )
 
 var (
@@ -23,7 +24,7 @@ func (e base64Encoding) StreamEncode(downstream io.Writer) (io.WriteCloser, erro
 }
 
 func (e base64Encoding) StreamDecode(upstream io.Reader) (io.ReadCloser, error) {
-	return io.NopCloser(base64.NewDecoder(e.encoding, upstream)), nil
+	return ioutil.NopCloser(base64.NewDecoder(e.encoding, upstream)), nil
 }
 
 func (e base64Encoding) Encode(src []byte) ([]byte, error) {
