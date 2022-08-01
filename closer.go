@@ -39,3 +39,11 @@ func (w writeCloser) Close() error {
 	}
 	return nil
 }
+
+var _ io.WriteCloser = (*nopWriterCloser)(nil)
+
+type nopWriterCloser struct {
+	io.Writer
+}
+
+func (nopWriterCloser) Close() error { return nil }
