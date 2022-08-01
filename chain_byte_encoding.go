@@ -54,8 +54,7 @@ func NewChainByteStreamEncoding(encodings ...ByteStreamEncoding) ByteStreamEncod
 type chainByteStreamEncoding []ByteStreamEncoding
 
 func (e chainByteStreamEncoding) StreamEncode(w io.Writer) (io.WriteCloser, error) {
-	wc := make(writeCloser, len(e)+1)
-	wc[len(e)] = w
+	wc := make(writeCloser, len(e))
 
 	var err error
 	for i := len(e) - 1; i >= 0; i-- {
@@ -70,8 +69,7 @@ func (e chainByteStreamEncoding) StreamEncode(w io.Writer) (io.WriteCloser, erro
 }
 
 func (e chainByteStreamEncoding) StreamDecode(r io.Reader) (io.ReadCloser, error) {
-	rc := make(readCloser, len(e)+1)
-	rc[len(e)] = r
+	rc := make(readCloser, len(e))
 
 	var err error
 	for i := len(e) - 1; i >= 0; i-- {
