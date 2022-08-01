@@ -22,20 +22,11 @@ type readWriteEncoding struct {
 }
 
 func (e readWriteEncoding) StreamEncode(downstream io.Writer) (io.WriteCloser, error) {
-	w, err := e.builder.NewWriter(downstream)
-	if err != nil {
-		return nil, err
-	}
-	return writeCloser{w, downstream}, nil
+	return e.builder.NewWriter(downstream)
 }
 
 func (e readWriteEncoding) StreamDecode(upstream io.Reader) (io.ReadCloser, error) {
-	r, err := e.builder.NewReader(upstream)
-	if err != nil {
-		return nil, err
-	}
-
-	return readCloser{r, upstream}, nil
+	return e.builder.NewReader(upstream)
 }
 
 func (e readWriteEncoding) Encode(src []byte) ([]byte, error) {

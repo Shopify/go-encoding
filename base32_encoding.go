@@ -19,13 +19,11 @@ type base32Encoding struct {
 }
 
 func (e base32Encoding) StreamEncode(downstream io.Writer) (io.WriteCloser, error) {
-	w := base32.NewEncoder(e.encoding, downstream)
-	return writeCloser{w, downstream}, nil
+	return base32.NewEncoder(e.encoding, downstream), nil
 }
 
 func (e base32Encoding) StreamDecode(upstream io.Reader) (io.ReadCloser, error) {
-	r := base32.NewDecoder(e.encoding, upstream)
-	return readCloser{r, upstream}, nil
+	return io.NopCloser(base32.NewDecoder(e.encoding, upstream)), nil
 }
 
 func (e base32Encoding) Encode(src []byte) ([]byte, error) {

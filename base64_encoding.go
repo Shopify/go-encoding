@@ -19,13 +19,11 @@ type base64Encoding struct {
 }
 
 func (e base64Encoding) StreamEncode(downstream io.Writer) (io.WriteCloser, error) {
-	w := base64.NewEncoder(e.encoding, downstream)
-	return writeCloser{w, downstream}, nil
+	return base64.NewEncoder(e.encoding, downstream), nil
 }
 
 func (e base64Encoding) StreamDecode(upstream io.Reader) (io.ReadCloser, error) {
-	r := base64.NewDecoder(e.encoding, upstream)
-	return readCloser{r, upstream}, nil
+	return io.NopCloser(base64.NewDecoder(e.encoding, upstream)), nil
 }
 
 func (e base64Encoding) Encode(src []byte) ([]byte, error) {
