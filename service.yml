@@ -1,6 +1,5 @@
 slack_channels:
 - notification-platform-team
-ci_url: https://travis-ci.org/github/Shopify/go-encoding
 bugs_url: https://github.com/Shopify/go-encoding/issues
 production:
   classification: library
